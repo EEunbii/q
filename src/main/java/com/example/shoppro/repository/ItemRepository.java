@@ -1,12 +1,16 @@
 package com.example.shoppro.repository;
 
 import com.example.shoppro.entity.Item;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-public interface ItemRepository extends JpaRepository<Item, Long> {
+public interface ItemRepository extends JpaRepository<Item, Long>{
     //제품명으로 검색 제품명을 동일한 이름이 있을 수 있으니
     //여러개 출력기능 List 사용
 
@@ -29,9 +33,19 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     //가격으로 검색
     public List<Item>findByPriceLessThan(Integer price);
 
+    public List<Item> findByPriceGreaterThan(Integer price);
+
+    public List<Item> findByPriceGreaterThanOrderByPriceAsc(Integer price);
+    public List<Item> findByPriceGreaterThanOrderByPriceAsc(Integer price, Pageable pageable);
+
+    //페이징처리된 초과이면서 같은거
+    public List<Item> findByPriceGreaterThanEqual(Integer price,Pageable pageable);
+
     //장렬까지 추가
 
-    List<Item>findByPriceLessThanOrderByPriceDesc (Integer price);
+    List<Item> findByPriceLessThanOrderByPriceDesc (Integer price);
 
-
+    //nativeQuery 사용
+    @Query(value = "select * from Item where i.item_nm=:itemNm", nativeQuery = true)
+    List<Item> nativeQuerySelectwhereNamelike(String itemNm, Pageable pageable);
 }
